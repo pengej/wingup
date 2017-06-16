@@ -262,7 +262,7 @@ LRESULT CALLBACK progressBarDlgProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARA
 				stopDL = true;
 				if (abortOrNot == "")
 					abortOrNot = MSGID_ABORTORNOT;
-				int abortAnswer = ::MessageBoxA(hWndDlg, abortOrNot.c_str(), msgBoxTitle.c_str(), MB_YESNO);
+				int abortAnswer = ::MessageBoxA(hWndDlg, abortOrNot.c_str(), msgBoxTitle.c_str(), MB_YESNO|MB_ICONQUESTION);
 				if (abortAnswer == IDYES)
 				{
 					doAbort = true;
@@ -375,7 +375,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 
 	if (isHelp)
 	{
-		::MessageBoxA(NULL, MSGID_HELP, "GUP Command Argument Help", MB_OK);
+		::MessageBoxA(NULL, MSGID_HELP, "GUP Command Argument Help", MB_OK|MB_ICONINFORMATION);
 		return 0;
 	}
 
@@ -482,7 +482,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 		if (res != CURLE_OK)
 		{
 			if (!isSilentMode)
-				::MessageBoxA(NULL, errorBuffer, "curl error", MB_OK);
+				::MessageBoxA(NULL, errorBuffer, "curl error", MB_OK|MB_ICONERROR);
 			return -1;
 		}
 
@@ -495,7 +495,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 				string noUpdate = nativeLang.getMessageString("MSGID_NOUPDATE");
 				if (noUpdate == "")
 					noUpdate = MSGID_NOUPDATE;
-				::MessageBoxA(NULL, noUpdate.c_str(), gupParams.getMessageBoxTitle().c_str(), MB_OK);
+				::MessageBoxA(NULL, noUpdate.c_str(), gupParams.getMessageBoxTitle().c_str(), MB_OK|MB_ICONINFORMATION);
 			}
 			return 0;
 		}
@@ -514,7 +514,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 		bool isModal = gupParams.isMessageBoxModal();
 
 		if (!thirdButtonCmd)
-			dlAnswer = ::MessageBoxA(isModal ? hApp : NULL, updateAvailable.c_str(), gupParams.getMessageBoxTitle().c_str(), MB_YESNO);
+			dlAnswer = ::MessageBoxA(isModal ? hApp : NULL, updateAvailable.c_str(), gupParams.getMessageBoxTitle().c_str(), MB_YESNO|MB_ICONQUESTION);
 		else
 			dlAnswer = static_cast<int32_t>(::DialogBox(hInst, MAKEINTRESOURCE(IDD_YESNONEVERDLG), isModal ? hApp : NULL, reinterpret_cast<DLGPROC>(yesNoNeverDlgProc)));
 
@@ -580,13 +580,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 		if (res != CURLE_OK)
 		{
 			if (!isSilentMode)
-				::MessageBoxA(NULL, errorBuffer, "curl error", MB_OK);
+				::MessageBoxA(NULL, errorBuffer, "curl error", MB_OK|MB_ICONERROR);
 			if (doAbort)
 			{
 				string dlStopped = nativeLang.getMessageString("MSGID_DOWNLOADSTOPPED");
 				if (dlStopped == "")
 					dlStopped = MSGID_DOWNLOADSTOPPED;
-				::MessageBoxA(NULL, dlStopped.c_str(), gupParams.getMessageBoxTitle().c_str(), MB_OK);
+				::MessageBoxA(NULL, dlStopped.c_str(), gupParams.getMessageBoxTitle().c_str(), MB_OK|MB_ICONINFORMATION);
 			}
 			return -1;
 		}
@@ -607,7 +607,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 					closeApp = MSGID_CLOSEAPP;
 				msg += closeApp;
 
-				int installAnswer = ::MessageBoxA(NULL, msg.c_str(), gupParams.getMessageBoxTitle().c_str(), MB_YESNO);
+				int installAnswer = ::MessageBoxA(NULL, msg.c_str(), gupParams.getMessageBoxTitle().c_str(), MB_YESNO|MB_ICONQUESTION);
 
 				if (installAnswer == IDNO)
 				{
@@ -633,7 +633,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 
 	} catch (exception ex) {
 		if (!isSilentMode)
-			::MessageBoxA(NULL, ex.what(), "Xml Exception", MB_OK);
+			::MessageBoxA(NULL, ex.what(), "Xml Exception", MB_OK|MB_ICONERROR);
 
 		if (pFile != NULL)
 			fclose(pFile);
@@ -643,7 +643,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 	catch (...)
 	{
 		if (!isSilentMode)
-			::MessageBoxA(NULL, "Unknown", "Unknown Exception", MB_OK);
+			::MessageBoxA(NULL, "Unknown", "Unknown Exception", MB_OK | MB_ICONERROR);
 
 		if (pFile != NULL)
 			fclose(pFile);
