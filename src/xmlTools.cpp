@@ -249,7 +249,7 @@ GupDownloadInfo::GupDownloadInfo(const char * xmlString) : _updateVersion(""), _
 		_updateLocation = locVal;
 
 		XMLNode *runParamsNode = root->FirstChildElement("RunParams");
-		if (locationNode) {
+		if (runParamsNode) {
 			XMLNode *ln = runParamsNode->FirstChild();
 			if (ln) {
 				const char *runParamsVal = ln->Value();
