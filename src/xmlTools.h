@@ -31,6 +31,7 @@ public:
 	GupParameters() {};
 	GupParameters(const char * xmlFileName);
 	
+	const std::string & getDisplayName() const { return _displayName; };
 	const std::string & getCurrentVersion() const { return _currentVersion;};
 	const std::string & getParam() const { return _param; };
 	const std::string & getInfoLocation() const {return _infoUrl;};
@@ -52,6 +53,7 @@ public:
 	bool isMessageBoxModal() const { return _isMessageBoxModal; };
 
 private:
+	std::string _displayName;
 	std::string _currentVersion;
 	std::string _param;
 	std::string _infoUrl;

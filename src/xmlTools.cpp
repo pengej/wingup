@@ -30,6 +30,20 @@ GupParameters::GupParameters(const char * xmlFileName)
 	if (!root)
 		throw exception("It's not a valid GUP input xml.");
 
+	XMLNode *displayNameNode = root->FirstChildElement("DisplayName");
+	if (displayNameNode)
+	{
+		XMLNode *n = displayNameNode->FirstChild();
+		if (n)
+		{
+			const char *val = n->Value();
+			if (val)
+			{
+				_displayName = val;
+			}
+		}
+	}
+
 	XMLNode *versionNode = root->FirstChildElement("Version");
 	if (versionNode)
 	{

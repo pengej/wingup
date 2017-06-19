@@ -601,7 +601,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 
 			if (h)
 			{
-				string msg = gupParams.getClassName();
+				string msg = gupParams.getDisplayName() != "" ? gupParams.getDisplayName() : 
+					(gupParams.getSoftwareName() != "" ? gupParams.getSoftwareName() : gupParams.getClassName());
+
 				string closeApp = nativeLang.getMessageString("MSGID_CLOSEAPP");
 				if (closeApp == "")
 					closeApp = MSGID_CLOSEAPP;
