@@ -17,14 +17,13 @@
  along with GUP.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "tinyxml.h"
+#include "tinyxml2.h"
 #include <string>
-
 
 class XMLTool {
 
 protected:
-	TiXmlDocument _xmlDoc;
+	tinyxml2::XMLDocument _xmlDoc;
 };
 
 class GupParameters : public XMLTool {
@@ -83,27 +82,29 @@ private:
 
 class GupDownloadInfo : public XMLTool {
 public:
-	GupDownloadInfo() : _updateVersion(""), _updateLocation("") {};
+	GupDownloadInfo() : _updateVersion(""), _updateLocation(""), _updateRunParams("") {};
 	GupDownloadInfo(const char * xmlString);
 	
 	const std::string & getVersion() const { return _updateVersion;};
 	const std::string & getDownloadLocation() const {return _updateLocation;};
+	const std::string & getUpdateRunParams() const { return _updateRunParams;};
 	bool doesNeed2BeUpdated() const {return _need2BeUpdated;};
 
 private:
 	bool _need2BeUpdated;
 	std::string _updateVersion;
 	std::string _updateLocation;
+	std::string _updateRunParams;
 };
 
 class GupNativeLang : public XMLTool {
 public:
 	GupNativeLang(const char * xmlFileName) {
 		_xmlDoc.LoadFile(xmlFileName);
-		_nativeLangRoot = _xmlDoc.FirstChild("GUP_NativeLangue");
+		_nativeLangRoot = _xmlDoc.FirstChildElement("GUP_NativeLangue");
 	};
 	std::string getMessageString(std::string msgID);
 
 protected:
-	TiXmlNode *_nativeLangRoot;
+	tinyxml2::XMLNode *_nativeLangRoot;
 };

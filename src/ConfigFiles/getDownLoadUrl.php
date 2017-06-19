@@ -39,6 +39,7 @@ else
 	<NeedToBeUpdated>yes</NeedToBeUpdated>
 	<Version>$lastestVersionStr</Version>
 	<Location>$DLURL</Location>
+	<RunParams>/S /V/qb</RunParams>
 </GUP>"
 ;
 }
