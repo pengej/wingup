@@ -579,8 +579,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 
 		if (res != CURLE_OK)
 		{
-			if (!isSilentMode)
-				::MessageBoxA(NULL, errorBuffer, "curl error", MB_OK|MB_ICONERROR);
 			if (doAbort)
 			{
 				string dlStopped = nativeLang.getMessageString("MSGID_DOWNLOADSTOPPED");
@@ -588,6 +586,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 					dlStopped = MSGID_DOWNLOADSTOPPED;
 				::MessageBoxA(NULL, dlStopped.c_str(), gupParams.getMessageBoxTitle().c_str(), MB_OK|MB_ICONINFORMATION);
 			}
+			else if (!isSilentMode)
+				::MessageBoxA(NULL, errorBuffer, "curl error", MB_OK | MB_ICONERROR);
 			return -1;
 		}
 
