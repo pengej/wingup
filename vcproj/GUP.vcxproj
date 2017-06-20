@@ -161,7 +161,7 @@ nmake /f Makefile.vc mode=static DEBUG=yes MACHINE=x64 RTLIBCFG=static</Command>
 copy ..\src\ConfigFiles\gup.xml ..\bin\gup.xml
 copy ..\src\ConfigFiles\getDownLoadUrl.php ..\bin\getDownLoadUrl.php
 copy ..\LICENSE ..\bin\LICENSE
-copy ..\gpl.txt ..\bin\gpl.txt
+copy ..\lgpl.txt ..\bin\lgpl.txt
 copy ..\README.md ..\bin\README.md
 xcopy ..\src\translations ..\bin\translations\ /S /Y /E</Command>
     </PostBuildEvent>
@@ -198,7 +198,7 @@ nmake /f Makefile.vc mode=static RTLIBCFG=static</Command>
 copy ..\src\ConfigFiles\gup.xml ..\bin64\gup.xml
 copy ..\src\ConfigFiles\getDownLoadUrl.php ..\bin64\getDownLoadUrl.php
 copy ..\LICENSE ..\bin64\LICENSE
-copy ..\gpl.txt ..\bin64\gpl.txt
+copy ..\lgpl.txt ..\bin64\lgpl.txt
 copy ..\README.md ..\bin64\README.md
 xcopy ..\src\translations ..\bin64\translations\  /S /Y /E</Command>
     </PostBuildEvent>
@@ -222,6 +222,9 @@ nmake /f Makefile.vc mode=static MACHINE=x64 RTLIBCFG=static</Command>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="..\src\gup.exe.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\src\GUP.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
