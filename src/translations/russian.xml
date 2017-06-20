@@ -29,7 +29,9 @@ Use this file to set your proxy settings if need.
 		<!-- <MSGID_DOWNLOADSTOPPED>Download is stopped by user. Update is aborded.</MSGID_DOWNLOADSTOPPED> -->
 		<MSGID_DOWNLOADSTOPPED>Загрузка остановлена пользователем. Обновление отменено.</MSGID_DOWNLOADSTOPPED>
 		<!-- <MSGID_CLOSEAPP> is opened.\rUpdater will close it in order to process the installation.\rContinue?</MSGID_CLOSEAPP> -->
-		<MSGID_CLOSEAPP> запущен.\rПрограмма обновления закроет его, чтобы установить обновление.\rХотите продолжить?</MSGID_CLOSEAPP>
+		<MSGID_CLOSEAPP><![CDATA[%s запущен.
+Программа обновления закроет его, чтобы установить обновление.
+Хотите продолжить?]]></MSGID_CLOSEAPP>
 		<!-- <MSGID_ABORTORNOT>Do you want to abort update download?</MSGID_ABORTORNOT> -->
 		<MSGID_ABORTORNOT>Отменить загрузку обновления?</MSGID_ABORTORNOT>
 	</PopupMessages>

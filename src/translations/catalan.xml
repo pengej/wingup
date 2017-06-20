@@ -25,7 +25,9 @@ Use this file to set your proxy settings if need.
 		<MSGID_NOUPDATE>No hi ha cap actualització disponible.</MSGID_NOUPDATE>
 		<MSGID_UPDATEAVAILABLE>Hi ha una actualització disponible. Voleu baixar-la?</MSGID_UPDATEAVAILABLE>
 		<MSGID_DOWNLOADSTOPPED>S'ha interromput la baixada. No es podrà fer l'actualització.</MSGID_DOWNLOADSTOPPED>
-		<MSGID_CLOSEAPP> és obert.\rEl programa es tancarà per fer la instalació.\rVoleu continuar?</MSGID_CLOSEAPP>
+		<MSGID_CLOSEAPP><![CDATA[%s és obert.
+El programa es tancarà per fer la instalació.
+Voleu continuar?]]></MSGID_CLOSEAPP>
 		<MSGID_ABORTORNOT>Segur que voleu interrompre la baixada de l'actualització?</MSGID_ABORTORNOT>
 	</PopupMessages>
 </GUP_NativeLangue>

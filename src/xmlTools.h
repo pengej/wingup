@@ -105,7 +105,7 @@ public:
 		_xmlDoc.LoadFile(xmlFileName);
 		_nativeLangRoot = _xmlDoc.FirstChildElement("GUP_NativeLangue");
 	};
-	std::string getMessageString(std::string msgID);
+	std::string getMessageString(std::string msgID, std::string defaultMsg = "");
 
 protected:
 	tinyxml2::XMLNode *_nativeLangRoot;

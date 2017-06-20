@@ -25,7 +25,9 @@ Use this file to set your proxy settings if need.
 		<MSGID_NOUPDATE>No hay ninguna actualización disponible.</MSGID_NOUPDATE>
 		<MSGID_UPDATEAVAILABLE>Hay una actualización disponible. ¿Quiere descargarla?</MSGID_UPDATEAVAILABLE>
 		<MSGID_DOWNLOADSTOPPED>Se interrumpió la descarga. No se podrá realizar la actualización.</MSGID_DOWNLOADSTOPPED>
-		<MSGID_CLOSEAPP> está abierto.\rSe cerrará el programa para realizar la instalación.\r¿Quiere continuar?</MSGID_CLOSEAPP>
+		<MSGID_CLOSEAPP><![CDATA[%s está abierto.
+Se cerrará el programa para realizar la instalación.
+¿Quiere continuar?]]></MSGID_CLOSEAPP>
 		<MSGID_ABORTORNOT>¿Confirma que quiere interrumpir la descarga de la actualización?</MSGID_ABORTORNOT>
 	</PopupMessages>
 </GUP_NativeLangue>

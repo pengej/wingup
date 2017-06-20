@@ -24,17 +24,31 @@
 		<MSGID_NOUPDATE>没有可用的升级</MSGID_NOUPDATE>
 				
 		<!-- <MSGID_UPDATEAVAILABLE>An update package is available, do you want to download it?</MSGID_UPDATEAVAILABLE> -->
-		<MSGID_UPDATEAVAILABLE>新的升级包可用, 您现在想要下载它吗?</MSGID_UPDATEAVAILABLE>
+		<MSGID_UPDATEAVAILABLE>新的升级包可用，您现在想要下载它吗？</MSGID_UPDATEAVAILABLE>
 
 		<!-- <MSGID_DOWNLOADSTOPPED>Download is stopped by user. Update is aborded.</MSGID_DOWNLOADSTOPPED> -->
-		<MSGID_DOWNLOADSTOPPED>下载被用户停止. 升级被中断.</MSGID_DOWNLOADSTOPPED>
+		<MSGID_DOWNLOADSTOPPED>下载被用户停止，升级被中断。</MSGID_DOWNLOADSTOPPED>
 		
 		<!-- <MSGID_CLOSEAPP> is opened.\rUpdater will close it in order to process the installation.\rContinue?</MSGID_CLOSEAPP> -->
-		<MSGID_CLOSEAPP><![CDATA[ 正在运行.
+		<MSGID_CLOSEAPP><![CDATA[%s 正在运行.
 继续升级将会关闭此应用程序.
 是否继续?]]></MSGID_CLOSEAPP>
 
 		<!-- <MSGID_ABORTORNOT>Do you want to abort update download?</MSGID_ABORTORNOT> -->
-		<MSGID_ABORTORNOT>你想要中断升级吗?</MSGID_ABORTORNOT>
+		<MSGID_ABORTORNOT>你想要中断升级吗？</MSGID_ABORTORNOT>
+		
+		<MSGID_DOWNLOAD_TITLE>正在下载: %2Iu%%</MSGID_DOWNLOAD_TITLE>
+		
+		<MSGID_DOWNLOAD>正在下载 %s: %s/%s</MSGID_DOWNLOAD>
+		
+		<MSGID_PROXY_SERVER>代理IP : </MSGID_PROXY_SERVER>
+		
+		<MSGID_PROXY_PORT>代理端口 : </MSGID_PROXY_PORT>
+		
+		<MSGID_PROXY_SETTINGS>代理设置</MSGID_PROXY_SETTINGS>
+		
+		<MSGID_OK>确定</MSGID_OK>
+		
+		<MSGID_CANCEL>取消</MSGID_CANCEL>
 	</PopupMessages>
 </GUP_NativeLangue>

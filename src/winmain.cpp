@@ -33,6 +33,8 @@ HINSTANCE hInst;
 static HWND hProgressDlg;
 static HWND hProgressBar;
 static HWND hProgressLabel;
+HHOOK hhookMessageBox;
+
 static bool doAbort = false;
 static bool stopDL = false;
 static string msgBoxTitle = "";
@@ -41,17 +43,31 @@ static string proxySrv = "0.0.0.0";
 static long proxyPort  = 0;
 static string winGupUserAgent = "WinGup/";
 static string dlFileName = "";
+static string msgDownloadTitle = "";
+static string msgDownload = "";
+static string msgCancel = "";
+static string msgOK = "";
+static string msgProxySettings = "";
+static string msgProxyServer = "";
+static string msgProxyPort = "";
 
 const char FLAG_OPTIONS[] = "-options";
 //const char FLAG_VERSION[] = "-v";
 const char FLAG_VERBOSE[] = "-verbose";
 const char FLAG_HELP[] = "--help";
 
+const char MSGID_OK[] = "OK";
+const char MSGID_CANCEL[] = "Cancel";
+const char MSGID_DOWNLOAD_TITLE[] = "Downloading: %2Iu%%";
+const char MSGID_DOWNLOAD[] = "Downloading %s: %s/%s";
 const char MSGID_NOUPDATE[] = "No update is available.";
 const char MSGID_UPDATEAVAILABLE[] = "An update package is available, do you want to download it?";
 const char MSGID_DOWNLOADSTOPPED[] = "Download is stopped by user. Update is aborted.";
-const char MSGID_CLOSEAPP[] = " is opened.\rUpdater will close it in order to process the installation.\rContinue?";
+const char MSGID_CLOSEAPP[] = "%s is opened.\rUpdater will close it in order to process the installation.\rContinue?";
 const char MSGID_ABORTORNOT[] = "Do you want to abort update download?";
+const char MSGID_PROXY_SERVER[] = "Proxy server : ";
+const char MSGID_PROXY_PORT[] = "Port : ";
+const char MSGID_PROXY_SETTINGS[] = "Proxy Settings";
 const char MSGID_HELP[] = "Usage :\r\
 \r\
 gup --help\r\
@@ -228,14 +244,14 @@ static size_t setProgress(HWND, double t, double d, double, double)
 	SendMessage(hProgressBar, PBM_STEPIT, 0, 0);
 
 	char percentage[128];
-	sprintf(percentage, "Downloading: %2Iu%%", ratio);
+	sprintf(percentage, msgDownloadTitle.c_str(), ratio);
 	::SetWindowTextA(hProgressDlg, percentage);
 
 	char strD[11], strT[11];
-	StrFormatKBSizeA((long)d, strD, 11);
-	StrFormatKBSizeA((long)t, strT, 11);
+	StrFormatByteSizeA((long)d, strD, 11);
+	StrFormatByteSizeA((long)t, strT, 11);
 
-	sprintf(percentage, "Downloading %s: %s/%s", dlFileName.c_str(), strD, strT);
+	sprintf(percentage, msgDownload.c_str(), dlFileName.c_str(), strD, strT);
 	::SetWindowTextA(hProgressLabel, percentage);
 	return 0;
 };
@@ -254,6 +270,10 @@ LRESULT CALLBACK progressBarDlgProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARA
 			hProgressDlg = hWndDlg;
 			hProgressBar = GetDlgItem(hProgressDlg, IDC_PROGRESS_DOWNLOAD);
 			hProgressLabel = GetDlgItem(hProgressDlg, IDC_DOWNLOAD_PROCESS_LABEL);
+			{
+				HWND hCancelBtn = GetDlgItem(hProgressDlg, IDCANCEL);
+				SetWindowTextA(hCancelBtn, msgCancel.c_str());
+			}
 			SendMessage(hProgressBar, PBM_SETRANGE, 0, MAKELPARAM(0, 100)); 
 			SendMessage(hProgressBar, PBM_SETSTEP, 1, 0);
 			goToScreenCenter(hWndDlg);
@@ -267,8 +287,6 @@ LRESULT CALLBACK progressBarDlgProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARA
 				return TRUE;
 			case IDCANCEL:
 				stopDL = true;
-				if (abortOrNot == "")
-					abortOrNot = MSGID_ABORTORNOT;
 				int abortAnswer = ::MessageBoxA(hWndDlg, abortOrNot.c_str(), msgBoxTitle.c_str(), MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND);
 				if (abortAnswer == IDYES)
 				{
@@ -284,43 +302,6 @@ LRESULT CALLBACK progressBarDlgProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARA
 	return FALSE;
 }
 
-
-LRESULT CALLBACK yesNoNeverDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM)
-{
-	switch (message)
-	{
-		case WM_INITDIALOG:
-		{
-			if (thirdDoUpdateDlgButtonLabel != "")
-				::SetDlgItemTextA(hWndDlg, IDCANCEL, thirdDoUpdateDlgButtonLabel.c_str());
-
-			goToScreenCenter(hWndDlg);
-			return TRUE;
-		}
-
-		case WM_COMMAND:
-		{
-			switch (wParam)
-			{
-				case IDYES:
-				case IDNO:
-				case IDCANCEL:
-					EndDialog(hWndDlg, wParam);
-					return TRUE;
-
-				default:
-					break;
-			}
-		}
-
-		case WM_DESTROY:
-		{
-			return TRUE;
-		}
-	}
-	return FALSE;
-}
-
 LRESULT CALLBACK proxyDlgProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM)
 {
 
@@ -329,6 +310,12 @@ LRESULT CALLBACK proxyDlgProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM)
 		case WM_INITDIALOG:
 			::SetDlgItemTextA(hWndDlg, IDC_PROXYSERVER_EDIT, proxySrv.c_str());
 			::SetDlgItemInt(hWndDlg, IDC_PORT_EDIT, proxyPort, FALSE);
+			SetDlgItemTextA(hWndDlg, IDC_PROXYSERVER_STATIC, msgProxyServer.c_str());
+			SetDlgItemTextA(hWndDlg, IDC_PORT_STATIC, msgProxyPort.c_str());
+			SetDlgItemTextA(hWndDlg, IDOK, msgOK.c_str());
+			SetDlgItemTextA(hWndDlg, IDCANCEL, msgCancel.c_str());
+			SetWindowTextA(hWndDlg, msgProxySettings.c_str());
+
 			goToScreenCenter(hWndDlg);
 			return TRUE; 
 
@@ -358,6 +345,21 @@ static DWORD WINAPI launchProgressBar(void *)
 {
 	::DialogBox(hInst, MAKEINTRESOURCE(IDD_PROGRESS_DLG), NULL, reinterpret_cast<DLGPROC>(progressBarDlgProc));
 	return 0;
+}
+
+LRESULT CALLBACK MessageBoxCBTProc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+	if (nCode < 0)
+		return CallNextHookEx(hhookMessageBox, nCode, wParam, lParam);
+
+	switch (nCode)
+	{
+	case HCBT_ACTIVATE:
+		SetDlgItemTextA((HWND)wParam, IDCANCEL, thirdDoUpdateDlgButtonLabel.c_str());
+		return 0;
+	}
+
+	return CallNextHookEx(hhookMessageBox, nCode, wParam, lParam);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
@@ -392,6 +394,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 		GupExtraOptions extraOptions("gupOptions.xml");
 		GupNativeLang nativeLang("gupLang.xml");
 
+		msgBoxTitle = gupParams.getMessageBoxTitle();
+		msgCancel = nativeLang.getMessageString("MSGID_CANCEL", MSGID_CANCEL);
+		msgOK = nativeLang.getMessageString("MSGID_OK", MSGID_OK);
+		abortOrNot = nativeLang.getMessageString("MSGID_ABORTORNOT", MSGID_ABORTORNOT);
+		msgDownloadTitle = nativeLang.getMessageString("MSGID_DOWNLOAD_TITLE", MSGID_DOWNLOAD_TITLE);
+		msgDownload = nativeLang.getMessageString("MSGID_DOWNLOAD", MSGID_DOWNLOAD);
+		msgProxySettings = nativeLang.getMessageString("MSGID_PROXY_SETTINGS", MSGID_PROXY_SETTINGS);
+		msgProxyServer = nativeLang.getMessageString("MSGID_PROXY_SERVER", MSGID_PROXY_SERVER);
+		msgProxyPort = nativeLang.getMessageString("MSGID_PROXY_PORT", MSGID_PROXY_PORT);
+
 		if (launchSettingsDlg)
 		{
 			if (extraOptions.hasProxySettings())
@@ -404,9 +416,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 
 			return 0;
 		}
-
-		msgBoxTitle = gupParams.getMessageBoxTitle();
-		abortOrNot = nativeLang.getMessageString("MSGID_ABORTORNOT");
 
 		std::string updateInfo;
 		char errorBuffer[CURL_ERROR_SIZE] = { 0 };
@@ -499,18 +508,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 		{
 			if (!isSilentMode)
 			{
-				string noUpdate = nativeLang.getMessageString("MSGID_NOUPDATE");
-				if (noUpdate == "")
-					noUpdate = MSGID_NOUPDATE;
+				string noUpdate = nativeLang.getMessageString("MSGID_NOUPDATE", MSGID_NOUPDATE);
 				::MessageBoxA(NULL, noUpdate.c_str(), gupParams.getMessageBoxTitle().c_str(), MB_OK | MB_ICONINFORMATION | MB_SETFOREGROUND);
 			}
 			return 0;
 		}
 
 		// Ask user if he/she want to do update
-		string updateAvailable = nativeLang.getMessageString("MSGID_UPDATEAVAILABLE");
-		if (updateAvailable == "")
-			updateAvailable = MSGID_UPDATEAVAILABLE;
+		string updateAvailable = nativeLang.getMessageString("MSGID_UPDATEAVAILABLE", MSGID_UPDATEAVAILABLE);
 		
 		int thirdButtonCmd = gupParams.get3rdButtonCmd();
 		thirdDoUpdateDlgButtonLabel = gupParams.get3rdButtonLabel();
@@ -520,10 +525,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 		HWND hApp = ::FindWindowExA(NULL, NULL, gupParams.getClassName().c_str(), NULL);
 		bool isModal = gupParams.isMessageBoxModal();
 
-		if (!thirdButtonCmd)
-			dlAnswer = ::MessageBoxA(isModal ? hApp : NULL, updateAvailable.c_str(), gupParams.getMessageBoxTitle().c_str(), MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND);
-		else
-			dlAnswer = static_cast<int32_t>(::DialogBox(hInst, MAKEINTRESOURCE(IDD_YESNONEVERDLG), isModal ? hApp : NULL, reinterpret_cast<DLGPROC>(yesNoNeverDlgProc)));
+		if (thirdButtonCmd && thirdDoUpdateDlgButtonLabel != "") {
+			hhookMessageBox = SetWindowsHookEx(WH_CBT, MessageBoxCBTProc, NULL, GetCurrentThreadId());
+		}
+
+		dlAnswer = MessageBoxA(isModal ? hApp : NULL, updateAvailable.c_str(), gupParams.getMessageBoxTitle().c_str(), (!thirdButtonCmd?MB_YESNO:MB_YESNOCANCEL) | MB_ICONQUESTION | MB_SETFOREGROUND);
+
+		if (thirdButtonCmd && thirdDoUpdateDlgButtonLabel != "") {
+			UnhookWindowsHookEx(hhookMessageBox);
+		}
 
 		if (dlAnswer == IDNO)
 		{
@@ -588,9 +598,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 		{
 			if (doAbort)
 			{
-				string dlStopped = nativeLang.getMessageString("MSGID_DOWNLOADSTOPPED");
-				if (dlStopped == "")
-					dlStopped = MSGID_DOWNLOADSTOPPED;
+				string dlStopped = nativeLang.getMessageString("MSGID_DOWNLOADSTOPPED", MSGID_DOWNLOADSTOPPED);
 				::MessageBoxA(NULL, dlStopped.c_str(), gupParams.getMessageBoxTitle().c_str(), MB_OK | MB_ICONINFORMATION | MB_SETFOREGROUND);
 			}
 			else if (!isSilentMode)
@@ -611,12 +619,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 				string msg = gupParams.getDisplayName() != "" ? gupParams.getDisplayName() : 
 					(gupParams.getSoftwareName() != "" ? gupParams.getSoftwareName() : gupParams.getClassName());
 
-				string closeApp = nativeLang.getMessageString("MSGID_CLOSEAPP");
-				if (closeApp == "")
-					closeApp = MSGID_CLOSEAPP;
-				msg += closeApp;
+				string closeApp = nativeLang.getMessageString("MSGID_CLOSEAPP", MSGID_CLOSEAPP);
+				char strContent[128];
+				sprintf(strContent, closeApp.c_str(), msg.c_str());
 
-				int installAnswer = ::MessageBoxA(NULL, msg.c_str(), gupParams.getMessageBoxTitle().c_str(), MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND);
+				int installAnswer = ::MessageBoxA(NULL, strContent, gupParams.getMessageBoxTitle().c_str(), MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND);
 
 				if (installAnswer == IDNO)
 				{

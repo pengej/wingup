@@ -318,26 +318,26 @@ void GupExtraOptions::writeProxyInfo(const char *fn, const char *proxySrv, long 
 	}
 }
 
-std::string GupNativeLang::getMessageString(std::string msgID)
+std::string GupNativeLang::getMessageString(std::string msgID, std::string defaultMsg)
 {
 	if (!_nativeLangRoot)
-		return "";
+		return defaultMsg;
 
 	XMLNode *popupMessagesNode = _nativeLangRoot->FirstChildElement("PopupMessages");
 	if (!popupMessagesNode)
-		return "";
+		return defaultMsg;
 
 	XMLNode *node = popupMessagesNode->FirstChildElement(msgID.c_str());
 	if (!node)
-		return "";
+		return defaultMsg;
 
 	XMLNode *sn = node->FirstChild();
 	if (!sn)
-		return "";
+		return defaultMsg;
 		
 	const char *val = sn->Value();
 	if (!val || !(*val))
-		return "";
+		return defaultMsg;
 	
 	return val;
 }

@@ -32,7 +32,9 @@ Use this file to set your proxy settings if need.
 		<MSGID_DOWNLOADSTOPPED>Das Herunterladen wurde durch den Benutzer gestoppt. Das Update wurde abgebrochen.</MSGID_DOWNLOADSTOPPED>
 		
 		<!-- <MSGID_CLOSEAPP> is opened.\rUpdater will close it in order to process the installation.\rContinue?</MSGID_CLOSEAPP> -->
-		<MSGID_CLOSEAPP> wird ausgeführt.\rDer Updater wird die Anwendung beenden um die Installation vorzunehmen.\rFortfahren?</MSGID_CLOSEAPP>
+		<MSGID_CLOSEAPP><![CDATA[%s wird ausgeführt.
+Der Updater wird die Anwendung beenden um die Installation vorzunehmen.
+Fortfahren?]]></MSGID_CLOSEAPP>
 
 		<!-- <MSGID_ABORTORNOT>Do you want to abort update download?</MSGID_ABORTORNOT> -->
 		<MSGID_ABORTORNOT>Möchten Sie das Herunterladen des Updates wirklich abbrechen?</MSGID_ABORTORNOT>

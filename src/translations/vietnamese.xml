@@ -22,7 +22,9 @@
 		<MSGID_NOUPDATE>Hiện tại không có bản cập nhật nào.</MSGID_NOUPDATE>
 		<MSGID_UPDATEAVAILABLE>Một gói cập nhật hiện sẵn có, bạn có muốn tải về không?</MSGID_UPDATEAVAILABLE>
 		<MSGID_DOWNLOADSTOPPED>Quá trình tải đã dừng lại bởi người dùng. Cập nhật bị hủy bỏ.</MSGID_DOWNLOADSTOPPED>
-		<MSGID_CLOSEAPP> đã được mở.\rTrình cập nhật sẽ đóng nó để xử lý việc cài đặt.\rTiếp tục?</MSGID_CLOSEAPP>
+		<MSGID_CLOSEAPP><![CDATA[%s đã được mở.
+Trình cập nhật sẽ đóng nó để xử lý việc cài đặt.
+Tiếp tục?]]></MSGID_CLOSEAPP>
 		<MSGID_ABORTORNOT>Bạn có muốn hủy bỏ việc tải về cập nhật?</MSGID_ABORTORNOT>
 	</PopupMessages>
 </GUP_NativeLangue>
