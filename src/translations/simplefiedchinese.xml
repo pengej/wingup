@@ -18,9 +18,6 @@
     You should have received a copy of the GNU Lesser General Public License
     along with GUP.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<!-- This file is optional.
-Use this file to set your proxy settings if need.
--->
 <GUP_NativeLangue name = "Simplified Chinese">
 	<PopupMessages>
 		<!-- <MSGID_NOUPDATE>No update is available.</MSGID_NOUPDATE> -->
