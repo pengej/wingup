@@ -188,7 +188,7 @@ GupParameters::GupParameters(const char * xmlFileName)
 	}
 }
 
-GupDownloadInfo::GupDownloadInfo(const char * xmlString) : _updateVersion(""), _updateLocation(""), _updateRunParams("")
+GupDownloadInfo::GupDownloadInfo(const char * xmlString) : _updateVersion(""), _updateLocation(""), _updateRunParams(""), _updateMemo("")
 {
 	_xmlDoc.Parse(xmlString);
 
@@ -257,7 +257,18 @@ GupDownloadInfo::GupDownloadInfo(const char * xmlString) : _updateVersion(""), _
 					_updateRunParams = runParamsVal;
 				}
 			}
-		}		
+		}
+
+		XMLNode *memoNode = root->FirstChildElement("Memo");
+		if (memoNode) {
+			XMLNode *ln = memoNode->FirstChild();
+			if (ln) {
+				const char *memoVal = ln->Value();
+				if (memoVal && (*memoVal)) {
+					_updateMemo = memoVal;
+				}
+			}
+		}
 	}
 }
 

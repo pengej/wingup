@@ -68,6 +68,7 @@ const char MSGID_ABORTORNOT[] = "Do you want to abort update download?";
 const char MSGID_PROXY_SERVER[] = "Proxy server : ";
 const char MSGID_PROXY_PORT[] = "Port : ";
 const char MSGID_PROXY_SETTINGS[] = "Proxy Settings";
+const char MSGID_VERSION[] = "Version: %s";
 const char MSGID_HELP[] = "Usage :\r\
 \r\
 gup --help\r\
@@ -438,7 +439,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 		CURLcode res = CURLE_FAILED_INIT;
 
 		curl = curl_easy_init();
-		if (curl) 
+		if (curl)
 		{
 			std::string urlComplete = gupParams.getInfoLocation() + "?version=";
 			if (!version.empty())
@@ -462,7 +463,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 			curl_easy_setopt(curl, CURLOPT_URL, urlComplete.c_str());
 
 
-            curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, TRUE);
+			curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, TRUE);
 
 			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, getUpdateInfo);
 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &updateInfo);
@@ -494,7 +495,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 
 			curl_easy_cleanup(curl);
 		}
-		     
+
 		if (res != CURLE_OK)
 		{
 			if (!isSilentMode)
@@ -516,6 +517,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 
 		// Ask user if he/she want to do update
 		string updateAvailable = nativeLang.getMessageString("MSGID_UPDATEAVAILABLE", MSGID_UPDATEAVAILABLE);
+		if (gupDlInfo.getVersion() != "")
+		{
+			updateAvailable += "\n\n";
+			char buff[128];
+			sprintf(buff, nativeLang.getMessageString("MSGID_VERSION", MSGID_VERSION).c_str(), gupDlInfo.getVersion().c_str());
+			updateAvailable += buff;
+		}
+		if (gupDlInfo.getMemo() != "")
+		{
+			updateAvailable += "\n\n";
+			updateAvailable += gupDlInfo.getMemo();
+		}
 		
 		int thirdButtonCmd = gupParams.get3rdButtonCmd();
 		thirdDoUpdateDlgButtonLabel = gupParams.get3rdButtonLabel();
@@ -639,7 +652,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 		}
 
 		// execute the installer
-		HINSTANCE result = ::ShellExecuteA(NULL, "open", dlDest.c_str(), gupDlInfo.getUpdateRunParams().c_str(), ".", SW_SHOW);
+		HINSTANCE result = ::ShellExecuteA(NULL, "open", dlDest.c_str(), gupDlInfo.getRunParams().c_str(), ".", SW_SHOW);
         
         if (result <= (HINSTANCE)32) // There's a problem (Don't ask me why, ask Microsoft)
         {

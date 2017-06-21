@@ -38,6 +38,10 @@ else
 <GUP>
 	<NeedToBeUpdated>yes</NeedToBeUpdated>
 	<Version>$lastestVersionStr</Version>
+	<Memo><![CDATA[New version:
+1. xxxxx xx xxxxx xxxx xx.
+2. yy yyy yyy yyyyyy yyyy yyyy yy.
+]]></Memo>
 	<Location>$DLURL</Location>
 	<RunParams>/S /V/qb</RunParams>
 </GUP>"
