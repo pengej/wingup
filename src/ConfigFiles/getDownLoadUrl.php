@@ -44,6 +44,7 @@ else
 ]]></Memo>
 	<Location>$DLURL</Location>
 	<RunParams>/S /V/qb</RunParams>
+	<SHA1>sha1-checksum</SHA1>
 </GUP>"
 ;
 }

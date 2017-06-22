@@ -52,5 +52,7 @@
 		<MSGID_OK>确定</MSGID_OK>
 		
 		<MSGID_CANCEL>取消</MSGID_CANCEL>
+		
+		<MSGID_FILE_HASH_ERROR>升级包校验失败，请重试。</MSGID_FILE_HASH_ERROR>
 	</PopupMessages>
 </GUP_NativeLangue>

@@ -23,11 +23,16 @@
 #include <commctrl.h>
 #include "resource.h"
 #include <shlwapi.h>
+#include <WinCrypt.h>
 #include "xmlTools.h"
 #define CURL_STATICLIB
 #include "../curl/include/curl/curl.h"
 
+#define HASH_LEN 20
+
 using namespace std;
+
+static char HASH_BYTE_DIGITS[] = "0123456789abcdef";
 
 HINSTANCE hInst;
 static HWND hProgressDlg;
@@ -69,6 +74,7 @@ const char MSGID_PROXY_SERVER[] = "Proxy server : ";
 const char MSGID_PROXY_PORT[] = "Port : ";
 const char MSGID_PROXY_SETTINGS[] = "Proxy Settings";
 const char MSGID_VERSION[] = "Version: %s";
+const char MSGID_FILE_HASH_ERROR[] = "Update package checksum failed. Please retry.";
 const char MSGID_HELP[] = "Usage :\r\
 \r\
 gup --help\r\
@@ -356,6 +362,11 @@ LRESULT CALLBACK MessageBoxCBTProc(int nCode, WPARAM wParam, LPARAM lParam)
 	switch (nCode)
 	{
 	case HCBT_ACTIVATE:
+		// 去掉关闭按钮，因为关闭按钮也会返回IDCANCEL结果，和程序逻辑相悖
+		// ALT+F4的暂未跳过
+		HMENU hMenu = GetSystemMenu((HWND)wParam, 0);
+		EnableMenuItem(hMenu, SC_CLOSE, (MF_DISABLED+MF_GRAYED)|MF_ENABLED);
+
 		SetDlgItemTextA((HWND)wParam, IDCANCEL, thirdDoUpdateDlgButtonLabel.c_str());
 		return 0;
 	}
@@ -622,6 +633,82 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 		fflush(pFile);
 		fclose(pFile);
 		pFile = NULL;
+
+		if (gupDlInfo.getSha1() != "") {
+			HCRYPTPROV hProv;
+			HCRYPTHASH hHash = 0;
+
+			if (!CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+				if (!isSilentMode) {
+					::MessageBoxA(NULL, "init CryptAPI error", "CryptAPI error", MB_OK | MB_ICONINFORMATION | MB_SETFOREGROUND);
+				}
+				return 0;
+			}
+
+			pFile = fopen(dlDest.c_str(), "r");
+			if (pFile == NULL) {
+				return 0;
+			}
+			if (!CryptCreateHash(hProv, CALG_SHA1, 0, 0, &hHash))
+			{
+				if (!isSilentMode) {
+					::MessageBoxA(NULL, "Create file hash error", "CryptAPI error", MB_OK | MB_ICONINFORMATION | MB_SETFOREGROUND);
+				}
+				fclose(pFile);
+				pFile = NULL;
+				CryptReleaseContext(hProv, 0);
+				return 0;
+			}
+			BYTE buff[5];
+			size_t cbRead = 0;
+			while ((cbRead = fread(buff, sizeof(BYTE), 5, pFile))>0) {
+				if (!CryptHashData(hHash, buff, (DWORD)cbRead, 0)) {
+					if (!isSilentMode) {
+						::MessageBoxA(NULL, "Hash file error", "CryptAPI error", MB_OK | MB_ICONINFORMATION | MB_SETFOREGROUND);
+					}
+					fclose(pFile);
+					pFile = NULL;
+					CryptReleaseContext(hProv, 0);
+					return 0;
+				}
+			}
+
+			DWORD cbHash = HASH_LEN;
+			BYTE fileHash[HASH_LEN+1];
+			if (!CryptGetHashParam(hHash, HP_HASHVAL, fileHash, &cbHash, 0))
+			{
+				if (!isSilentMode) {
+					::MessageBoxA(NULL, "Hash file error", "CryptAPI error", MB_OK | MB_ICONINFORMATION | MB_SETFOREGROUND);
+				}
+				fclose(pFile);
+				pFile = NULL;
+				CryptDestroyHash(hHash);
+				CryptReleaseContext(hProv, 0);
+				return 0;
+			}
+			
+			string hashResult = "";
+			for (int i = 0; i < HASH_LEN; i++) {
+				hashResult += HASH_BYTE_DIGITS[fileHash[i] >> 4];
+				hashResult += HASH_BYTE_DIGITS[fileHash[i] & 0xf];
+			}
+
+			CryptDestroyHash(hHash);
+			CryptReleaseContext(hProv, 0);
+
+			fclose(pFile);
+			pFile = NULL;
+
+			CryptReleaseContext(hProv, 0);
+
+			if (hashResult != gupDlInfo.getSha1()) {
+				if (!isSilentMode) {
+					string dlStopped = nativeLang.getMessageString("MSGID_FILE_HASH_ERROR", MSGID_FILE_HASH_ERROR);
+					::MessageBoxA(NULL, dlStopped.c_str(), gupParams.getMessageBoxTitle().c_str(), MB_OK | MB_ICONERROR | MB_SETFOREGROUND);
+				}
+				return 0;
+			}
+		}
 
 		if (gupParams.getClassName() != "")
 		{

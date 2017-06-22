@@ -269,6 +269,17 @@ GupDownloadInfo::GupDownloadInfo(const char * xmlString) : _updateVersion(""), _
 				}
 			}
 		}
+
+		XMLNode *Sha1Node = root->FirstChildElement("SHA1");
+		if (Sha1Node) {
+			XMLNode *ln = Sha1Node->FirstChild();
+			if (ln) {
+				const char *sha1Val = ln->Value();
+				if (sha1Val && (*sha1Val)) {
+					_updateSha1 = sha1Val;
+				}
+			}
+		}
 	}
 }
 

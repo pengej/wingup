@@ -84,13 +84,14 @@ private:
 
 class GupDownloadInfo : public XMLTool {
 public:
-	GupDownloadInfo() : _updateVersion(""), _updateLocation(""), _updateRunParams(""), _updateMemo("") {};
+	GupDownloadInfo() : _updateVersion(""), _updateLocation(""), _updateRunParams(""), _updateMemo(""), _updateSha1("") {};
 	GupDownloadInfo(const char * xmlString);
 	
 	const std::string & getVersion() const { return _updateVersion;};
 	const std::string & getDownloadLocation() const {return _updateLocation;};
 	const std::string & getRunParams() const { return _updateRunParams;};
 	const std::string & getMemo() const { return _updateMemo; };
+	const std::string & getSha1() const { return _updateSha1; };
 	bool doesNeed2BeUpdated() const {return _need2BeUpdated;};
 
 private:
@@ -99,6 +100,7 @@ private:
 	std::string _updateLocation;
 	std::string _updateRunParams;
 	std::string _updateMemo;
+	std::string _updateSha1;
 };
 
 class GupNativeLang : public XMLTool {
