@@ -645,7 +645,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 				return 0;
 			}
 
-			pFile = fopen(dlDest.c_str(), "r");
+			pFile = fopen(dlDest.c_str(), "rb");
 			if (pFile == NULL) {
 				return 0;
 			}
@@ -659,9 +659,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, int)
 				CryptReleaseContext(hProv, 0);
 				return 0;
 			}
-			BYTE buff[5];
+			BYTE buff[1024];
 			size_t cbRead = 0;
-			while ((cbRead = fread(buff, sizeof(BYTE), 5, pFile))>0) {
+			while ((cbRead = fread(buff, sizeof(BYTE), 1024, pFile))>0) {
 				if (!CryptHashData(hHash, buff, (DWORD)cbRead, 0)) {
 					if (!isSilentMode) {
 						::MessageBoxA(NULL, "Hash file error", "CryptAPI error", MB_OK | MB_ICONINFORMATION | MB_SETFOREGROUND);
